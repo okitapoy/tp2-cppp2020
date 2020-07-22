@@ -5,6 +5,9 @@
 #include "Histoire.hpp"
 #include "Lecteur.hpp"
 
+//#include "arbreavl.h"
+//#include "arbremap.h"
+#include "arbreMapAvl.h"
 
 #include <algorithm>
 #include <cassert>
@@ -62,9 +65,51 @@ lireDocuments( string a_nomFichier )
 int main() {
     // gardez la ligne suivante, elle lit le corpus et le place dans la structure de base.
     // Vous avez donc un vecteur d'histoire qui contient l'information sur les histoires,
-    // les Phrases et les mots qu'elles contiennent.
+    // les Phrases et les mots qu'elles contiennent.		arbreavl.o
     vector< Histoire * > * histoires = lireDocuments( string( "listeDocument.xml" ) );
 
+
+  //  cout << "size : " << histoires->size() << endl;
+
+//ArbreMap<string, int> *mapTest = new ArbreMap<string, int>[histoires->size()];
+
+ArbreMapAVL<string,int> avl;
+
+avl.inserer("un",11);
+avl.inserer("deux",22);
+avl.inserer("trois",33);
+avl.inserer("quatre",44);
+
+//ArbreAVL<int>::Iterateur iter;
+//ArbreMap<string, int>::Iterateur iter(avl);// = avl.rechercher(1);
+
+ArbreMapAVL<string, int>::Iterateur iterer = avl.debut();
+
+ArbreMapAVL<string, int>::Iterateur it = avl.rechercher("un");
+//string cle = avl.operator[](iterer);
+
+if(it){
+//  cout << "iter a fonctionnner" << endl;
+}
+//cout << avl.operator[](cle) << endl;
+
+
+
+if(avl.contient("trois")){
+  Noeud noeud("trois",3333);
+  cout << avl.operator[](cle) << endl;
+}
+
+
+
+
+
+    exit(-1);
+
+
+
+
+     vector<string>::const_iterator iterPhrase;
 
     // Pour votre projet, enlevez le code qui suit et remplacer le par votre code.
     // vous pouvez ajouter des fonctions.
@@ -75,18 +120,24 @@ int main() {
         // Les histoires ont une variable de classe 'titre'.
         cout << histoire->titre() << endl;
 
-        // Parcourir les Phrases qui compose une histoire à l'aide de l'iterateur des Histoires.
+        // Parcourir les Phrases qui compose une histoire ï¿½ l'aide de l'iterateur des Histoires.
         for( Phrase p : * histoire )
         {
             // p.begin() va chercher le premier mot de la Phrase p.  c'est aussi un iterateur et il peut
-            // s'utiliser avec les for augmentés.
+            // s'utiliser avec les for augmentï¿½s.
             // ici, nous affichons seulement le premier mot de la Phrase.
-            cout << *( p.begin() ) << endl;
+          //  cout< *( p.begin() ) << endl;
+
+          for(iterPhrase = p.begin(); iterPhrase != p.end(); ++iterPhrase){
+            string mot =  *iterPhrase;
+          //  cout << mot << endl;
+          }
+
         }
 
         cout << endl;
+        break;
     }
 
     return 0;
 }
-
