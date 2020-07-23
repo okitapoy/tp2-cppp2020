@@ -113,10 +113,10 @@ int main() {
 
   //   vector<string>::const_iterator iterPhrase;
   ArbreMapAVL<string,int> *avl = new ArbreMapAVL<string,int>[histoires->size()];
+  ArbreMapAVL<int,string> arbreTitres;
   int tempChiffre = 0;
   int index = 0;
 
-cout << "size : " <<  histoires->size() << endl;
     // Pour votre projet, enlevez le code qui suit et remplacer le par votre code.
     // vous pouvez ajouter des fonctionions.
 
@@ -125,9 +125,10 @@ cout << "size : " <<  histoires->size() << endl;
     {
         // Les histoires ont une variable de classe 'titre'.
         //cout << histoire->titre() << endl;
-        cout << "index  : " << index << endl;
+      //  cout << "index  : " << index << endl;
+        arbreTitres.inserer(index,histoire->titre());
         avl[index] = ArbreMapAVL<string,int>();
-        cout << "rien" << endl;
+      //  cout << "rien" << endl;
 
         // Parcourir les Phrases qui compose une histoire � l'aide de l'iterateur des Histoires.
         for( Phrase p : * histoire )
@@ -166,17 +167,66 @@ cout << "size : " <<  histoires->size() << endl;
 //cout << avl.operator[](iterer) << endl;
 
 //ArbreMapAVL<string, int>::Iterateur it = avl.rechercher("a");
-int cle = avl[25].operator[]("is");
-cout << cle << endl;
+//int cle = avl[25].operator[]("is");
+//cout << cle << endl;
 
-/*
-for(auto iterer = avl.debut(); iterer != avl.fin(); ++iterer){
-  string cle = avl.operator[](iterer);
-  int nombre = avl.operator[](cle);
 
-  cout << cle << " : " << nombre << endl;
 
-}*/
+
+ArbreMapAVL<string,double> arbreIDF;
+string mot;
+double nbrOccurence = 0;
+
+//int c = 0;//====
+
+for(int i = 0; i < histoires->size(); i++){
+
+  if(i == 0){
+
+    for(auto iter = avl[i].debut(); iter != avl[i].fin(); ++iter){
+        mot =  avl[i].operator[](iter);
+        arbreIDF.inserer(mot,1.0);
+    }
+
+  }else{
+    for(auto iter = avl[i].debut(); iter != avl[i].fin(); ++iter){
+
+      mot =  avl[i].operator[](iter);
+
+      if(arbreIDF.contient(mot)){
+        nbrOccurence = arbreIDF.operator[](mot) + 1;
+        arbreIDF.inserer(mot,nbrOccurence);
+      }else{
+        arbreIDF.inserer(mot,1.0);
+      }
+
+    }
+
+  }
+
+}
+
+
+//apliquer la formule log sur arbre idf
+double cc = 0;
+double idf = 0;
+for(auto iter = arbreIDF.debut(); iter != arbreIDF.fin(); ++iter){
+  mot = arbreIDF.operator[](iter);
+  cc = arbreIDF.operator[](mot);
+  idf = log2(histoires->size()/cc);
+  arbreIDF.inserer(mot,idf);
+
+
+  cc = arbreIDF.operator[](mot);
+//  cout << mot << " : " << cc << endl;
+
+}
+
+
+
+
+//cout << "log : " << log2(26.0/7.0) << endl;
+
 
 
     return 0;
@@ -186,4 +236,8 @@ for(auto iterer = avl.debut(); iterer != avl.fin(); ++iterer){
     /*the hideous monster
     launched itself into the air straight toward them. (_To be concluded in the February
     Number._) </chapitre> */
+    //3
+    //2
+    //1
+    //zero = 7
 }

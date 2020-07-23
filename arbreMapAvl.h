@@ -363,7 +363,22 @@ template <class K, class V>
 typename ArbreMapAVL<K, V>::Iterateur &ArbreMapAVL<K, V>::Iterateur::operator++()
 {
     // À compléter.
-    return *this;
+    //return *this;
+
+    if (courant->droite == NULL){
+ if (!chemin.vide()){
+      courant = chemin.depiler();
+  }else{
+      courant = NULL;
+  }
+}
+else {
+ courant = courant->droite;
+ while (courant->gauche != NULL){
+     chemin.empiler(courant);
+     courant = courant->gauche;
+ }
+}//----
 }
 
 // Post-incrément
@@ -435,7 +450,16 @@ typename ArbreMapAVL<K, V>::Iterateur ArbreMapAVL<K, V>::debut() const
 template <class K, class V>
 typename ArbreMapAVL<K, V>::Iterateur ArbreMapAVL<K, V>::fin() const
 {
-    return Iterateur(*this);
+   return Iterateur(*this);
+/*
+    Iterateur iter(*this);
+iter.courant = racine;
+
+while(iter.courant != NULL && iter.courant->droite != NULL){
+    iter.chemin.empiler(iter.courant->droite);
+    iter.courant = iter.courant->droite;
+}
+return iter; */
 }
 
 template <class K, class V>
