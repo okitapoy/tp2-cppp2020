@@ -24,6 +24,9 @@
 
 using namespace std;
 
+void genererArbreFrequence(const vector<Histoire *> *histoires, ArbreMapAVL<string,int> *&avl,ArbreMapAVL<int,string> &arbreTitres);
+void genererArbreIDF(int nbrHistoires, ArbreMapAVL<string,int> *&avl, ArbreMapAVL<string,double> &arbreIDF);
+void appliquerFormulerIDF(ArbreMapAVL<string,double> &arbreIDF, int nbrHistoires);
 
 
 vector< Histoire * > *
@@ -62,58 +65,129 @@ lireDocuments( string a_nomFichier )
 }
 
 
+
+
+//--------------------------------------------------------------
+//----------------------------------------------------------------
+
+
+void genererArbreFrequence(const vector<Histoire *> *histoires, ArbreMapAVL<string,int> *&avl,ArbreMapAVL<int,string> &arbreTitres){
+
+
+  int tempChiffre = 0;
+  int index = 0;
+
+    for( Histoire * histoire : * histoires )
+    {
+        arbreTitres.inserer(index,histoire->titre());
+        avl[index] = ArbreMapAVL<string,int>();
+
+        for( Phrase p : * histoire )
+        {
+
+          for(auto iterPhrase = p.begin(); iterPhrase != p.end(); ++iterPhrase){
+            string mot =  *iterPhrase;
+
+
+            if(avl[index].contient(mot)){
+              tempChiffre =  avl[index].operator[](mot) + 1;
+              avl[index].inserer(mot,tempChiffre);
+
+            }else{
+              avl[index].inserer(mot,1);
+            }
+
+         }
+
+        }
+        ++index;
+    }
+
+
+}
+
+
+
+void genererArbreIDF(int nbrHistoires, ArbreMapAVL<string,int> *&avl, ArbreMapAVL<string,double> &arbreIDF){
+
+  string mot;
+  double nbrOccurence = 0;
+
+  //int c = 0;//====
+
+  for(int i = 0; i < nbrHistoires; i++){
+
+    if(i == 0){
+
+      for(auto iter = avl[i].debut(); iter != avl[i].fin(); ++iter){
+          mot =  avl[i].operator[](iter);
+          arbreIDF.inserer(mot,1.0);
+      }
+
+    }else{
+      for(auto iter = avl[i].debut(); iter != avl[i].fin(); ++iter){
+
+        mot =  avl[i].operator[](iter);
+
+        if(arbreIDF.contient(mot)){
+          nbrOccurence = arbreIDF.operator[](mot) + 1;
+          arbreIDF.inserer(mot,nbrOccurence);
+        }else{
+          arbreIDF.inserer(mot,1.0);
+        }
+
+      }
+
+    }
+
+  }
+
+  appliquerFormulerIDF(arbreIDF,nbrHistoires);
+
+
+}
+
+
+void appliquerFormulerIDF(ArbreMapAVL<string,double> &arbreIDF, int nbrHistoires){
+
+  string mot;
+  double cc = 0;
+  double idf = 0;
+  for(auto iter = arbreIDF.debut(); iter != arbreIDF.fin(); ++iter){
+    mot = arbreIDF.operator[](iter);
+    cc = arbreIDF.operator[](mot);
+    idf = log2(nbrHistoires/cc);
+    arbreIDF.inserer(mot,idf);
+
+
+    cc = arbreIDF.operator[](mot);
+   cout << mot << " : " << cc << endl;
+
+  }
+}
+
+
+
+
+
+
+
+
 int main() {
     // gardez la ligne suivante, elle lit le corpus et le place dans la structure de base.
     // Vous avez donc un vecteur d'histoire qui contient l'information sur les histoires,
     // les Phrases et les mots qu'elles contiennent.		arbreavl.o
     vector< Histoire * > * histoires = lireDocuments( string( "listeDocument.xml" ) );
 
-
-  //  cout << "size : " << histoires->size() << endl;
-
-//ArbreMap<string, int> *mapTest = new ArbreMap<string, int>[histoires->size()];
-
-//ArbreMapAVL<string,int> *avl = new ArbreMapAVL<string,int>[histoires->size()];
-
-//avl.inserer("un",11);
-//avl.inserer("deux",22);
-//avl.inserer("trois",33);
-//avl.inserer("quatre",44);
-
-//ArbreAVL<int>::Iterateur iter;iterer
-//ArbreMap<string, int>::Iterateur iter(avl);// = avl.rechercher(1);
-
-//ArbreMapAVL<string, int>::Iterateur iterer = avl.debut();
-
-//ArbreMapAVL<string, int>::Iterateur it = avl.rechercher("un");
-//string cle = avl.operator[](iterer);
-
-//if(it){
-//  cout << "iter a fonctionnner" << endl;
-//}
-//cout << avl.operator[](cle) << endl;
-
-
-
-//if(avl.contient("trois")){
-//  Noeud noeud("trois",3333);
-//cout << avl.operator[]("trois") << endl;
-//avl.inserer("trois",3333339);
-//}
-
-
-
-
-
-
-  //  exit(-1);
-
-
-
-
-  //   vector<string>::const_iterator iterPhrase;
   ArbreMapAVL<string,int> *avl = new ArbreMapAVL<string,int>[histoires->size()];
   ArbreMapAVL<int,string> arbreTitres;
+  ArbreMapAVL<string,double> arbreIDF;
+
+  genererArbreFrequence(histoires,avl,arbreTitres);
+  genererArbreIDF(histoires->size(),avl,arbreIDF);
+
+
+  /*
   int tempChiffre = 0;
   int index = 0;
 
@@ -161,19 +235,14 @@ int main() {
         ++index;
     }
 
-
-//test affiche arbre
-//ArbreMapAVL<string, int>::Iterateur iterer = avl.debut();
-//cout << avl.operator[](iterer) << endl;
-
-//ArbreMapAVL<string, int>::Iterateur it = avl.rechercher("a");
-//int cle = avl[25].operator[]("is");
-//cout << cle << endl;
+*/
+//---------------------------------------------------------------------
+//--------------------------------------------------------------------
 
 
+/*
 
-
-ArbreMapAVL<string,double> arbreIDF;
+//ArbreMapAVL<string,double> arbreIDF;
 string mot;
 double nbrOccurence = 0;
 
@@ -205,9 +274,14 @@ for(int i = 0; i < histoires->size(); i++){
   }
 
 }
+*/
 
 
+
+
+/*
 //apliquer la formule log sur arbre idf
+string mot;
 double cc = 0;
 double idf = 0;
 for(auto iter = arbreIDF.debut(); iter != arbreIDF.fin(); ++iter){
@@ -218,9 +292,11 @@ for(auto iter = arbreIDF.debut(); iter != arbreIDF.fin(); ++iter){
 
 
   cc = arbreIDF.operator[](mot);
-//  cout << mot << " : " << cc << endl;
+ cout << mot << " : " << cc << endl;
 
 }
+
+*/
 
 
 
