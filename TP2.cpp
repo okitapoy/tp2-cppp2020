@@ -186,6 +186,29 @@ int main() {
   genererArbreFrequence(histoires,avl,arbreTitres);
   genererArbreIDF(histoires->size(),avl,arbreIDF);
 
+  vector<Phrase> nouvellePhrase;
+
+  
+    cout << "Entrez votre requete : "<< endl;
+    string str;
+    getline (cin, str);
+    cout << "LE STRING " << str << endl;
+    if (str.length()==0){
+      exit (-1);
+    }else {
+        nouvellePhrase.push_back(str);
+        for (auto it = nouvellePhrase.begin(); it != nouvellePhrase.end(); ++it){
+    
+        cout << *it << endl;
+
+    }
+    
+}
+
+
+    
+    
+
 
   /*
   int tempChiffre = 0;
