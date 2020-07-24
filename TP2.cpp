@@ -160,8 +160,8 @@ void appliquerFormulerIDF(ArbreMapAVL<string,double> &arbreIDF, int nbrHistoires
     arbreIDF.inserer(mot,idf);
 
 
-    cc = arbreIDF.operator[](mot);
-   cout << mot << " : " << cc << endl;
+  //  cc = arbreIDF.operator[](mot);
+  // cout << mot << " : " << cc << endl;
 
   }
 }
@@ -187,27 +187,55 @@ int main() {
   genererArbreIDF(histoires->size(),avl,arbreIDF);
 
   vector<Phrase> nouvellePhrase;
+//  Phrase entree
 
-  
+
     cout << "Entrez votre requete : "<< endl;
     string str;
     getline (cin, str);
     cout << "LE STRING " << str << endl;
     if (str.length()==0){
       exit (-1);
-    }else {
-        nouvellePhrase.push_back(str);
-        for (auto it = nouvellePhrase.begin(); it != nouvellePhrase.end(); ++it){
-    
-        cout << *it << endl;
-
     }
-    
+
+
+//traitement du deuxieme calcul
+
+Phrase entree(str);
+string chaine;// = "madness";
+double idf = 0;
+double sommeV = 0;
+string cle;
+
+
+for(int i = 0; i < histoires->size(); ++i){
+
+  for(auto iter = entree.begin(); iter != entree.end(); ++iter){
+
+    chaine = *iter;
+
+    if(avl[i].contient(chaine)){// chaine = le mot a verifier, dans la liste des mot entree par l'utilisateur
+      idf = arbreIDF.operator[](chaine);
+      sommeV += (idf * avl[i].operator[](chaine));
+    }
+
+  }
+
+
+
+cout << sommeV << " : " << arbreTitres.operator[](i) << endl;
+
+
+  idf = 0;
+  sommeV = 0;
 }
 
 
-    
-    
+
+
+
+
+
 
 
   /*
