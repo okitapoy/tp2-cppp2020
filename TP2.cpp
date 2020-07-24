@@ -203,12 +203,11 @@ int main() {
 
   vector<string> nouvellePhrase;
   double cc;
-
-
+  string str;
+do{
     cout << "Entrez votre requete : "<< endl;
-    string str;
+
     getline (cin, str);
-    cout << "LE STRING " << str << endl;
 
     if (str.length()==0){
 
@@ -224,6 +223,14 @@ double idf = 0;
 double sommeV = 0;
 string cle;
 
+struct FrequenceHistoire {
+  double frequence;
+  string titre;
+  bool operator() (FrequenceHistoire i,FrequenceHistoire j) { return (i.frequence > j.frequence);}
+} frequenceHistoire;
+
+vector<FrequenceHistoire> tableauFH;
+FrequenceHistoire fh;
 
 for(int i = 0; i < histoires->size(); ++i){
 
@@ -239,8 +246,10 @@ for(int i = 0; i < histoires->size(); ++i){
   }
 
 
+fh.frequence = sommeV;
+fh.titre = arbreTitres.operator[](i);
+tableauFH.push_back(fh);
 
-cout << sommeV << " : " << arbreTitres.operator[](i) << endl;
 
 
   idf = 0;
@@ -249,11 +258,17 @@ cout << sommeV << " : " << arbreTitres.operator[](i) << endl;
 
 
 
+sort(tableauFH.begin(), tableauFH.end(), frequenceHistoire);
+
+for (int k = 0; k < 5; ++k) {
+  cout << tableauFH[k].frequence << " : " << tableauFH[k].titre << endl;
+
+}
+
+tableauFH.clear();
 
 
-
-
-
+}while(str.length()!=0);
 
 
 
