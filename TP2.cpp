@@ -172,7 +172,11 @@ vector<string> TableauDeMot(string &entreeMot){
   string temp = "";
 
   for (int i = 0; i <= entreeMot.size(); i++){
+<<<<<<< HEAD
       if ((entreeMot[i] >= 'A' && entreeMot[i] <= 'Z' )|| (entreeMot[i] >= 'a' && entreeMot[i] <= 'z')
+=======
+      if ((entreeMot[i] >= 'A' && entreeMot[i] <= 'Z' )|| (entreeMot[i] >= 'a' && entreeMot[i] <= 'z') 
+>>>>>>> 8b07825b61bf522ddb48e5dd9e116143f198a120
             || entreeMot[i] == '-' ){
           temp += tolower(entreeMot[i]);
       }else{
@@ -201,6 +205,7 @@ int main() {
   genererArbreFrequence(histoires,avl,arbreTitres);
   genererArbreIDF(histoires->size(),avl,arbreIDF);
 
+<<<<<<< HEAD
 /*
   vector<Phrase> nouvellePhrase;
 
@@ -208,6 +213,12 @@ int main() {
   double cc;
   */
 
+=======
+  vector<string> nouvellePhrase;
+  double cc;
+
+
+>>>>>>> 8b07825b61bf522ddb48e5dd9e116143f198a120
     cout << "Entrez votre requete : "<< endl;
     string str;
     getline (cin, str);
@@ -216,6 +227,7 @@ int main() {
     if (str.length()==0){
 
       exit (-1);
+<<<<<<< HEAD
     }
 
 
@@ -249,7 +261,13 @@ cout << sommeV << " : " << arbreTitres.operator[](i) << endl;
   idf = 0;
   sommeV = 0;
 }
+=======
 
+    }else {
+>>>>>>> 8b07825b61bf522ddb48e5dd9e116143f198a120
+
+      nouvellePhrase = TableauDeMot(str);
+      
 
 
 
