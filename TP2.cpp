@@ -27,6 +27,7 @@ using namespace std;
 void genererArbreFrequence(const vector<Histoire *> *histoires, ArbreMapAVL<string,int> *&avl,ArbreMapAVL<int,string> &arbreTitres);
 void genererArbreIDF(int nbrHistoires, ArbreMapAVL<string,int> *&avl, ArbreMapAVL<string,double> &arbreIDF);
 void appliquerFormulerIDF(ArbreMapAVL<string,double> &arbreIDF, int nbrHistoires);
+vector<string> TableauDeMot(string &entreeMot);
 
 
 vector< Histoire * > *
@@ -150,7 +151,7 @@ void genererArbreIDF(int nbrHistoires, ArbreMapAVL<string,int> *&avl, ArbreMapAV
 
 void appliquerFormulerIDF(ArbreMapAVL<string,double> &arbreIDF, int nbrHistoires){
 
-  string mot;
+  string mot ;
   double cc = 0;
   double idf = 0;
   for(auto iter = arbreIDF.debut(); iter != arbreIDF.fin(); ++iter){
@@ -166,11 +167,25 @@ void appliquerFormulerIDF(ArbreMapAVL<string,double> &arbreIDF, int nbrHistoires
   }
 }
 
+vector<string> TableauDeMot(string &entreeMot){
+  vector<string> nouvellePhrase;
+  string temp = "";
 
+  for (int i = 0; i <= entreeMot.size(); i++){
+      if ((entreeMot[i] >= 'A' && entreeMot[i] <= 'Z' )|| (entreeMot[i] >= 'a' && entreeMot[i] <= 'z') 
+            || entreeMot[i] == '-' ){
+          temp += tolower(entreeMot[i]);
+      }else{
+        if (temp.compare("") > 0 || temp.compare("") < 0){
+        nouvellePhrase.push_back(temp);
+        }
+        temp = "";
+      }
+  }
 
+  return nouvellePhrase;
 
-
-
+}
 
 
 int main() {
@@ -186,25 +201,23 @@ int main() {
   genererArbreFrequence(histoires,avl,arbreTitres);
   genererArbreIDF(histoires->size(),avl,arbreIDF);
 
-  vector<Phrase> nouvellePhrase;
+  vector<string> nouvellePhrase;
+  double cc;
 
-  
+
     cout << "Entrez votre requete : "<< endl;
     string str;
     getline (cin, str);
     cout << "LE STRING " << str << endl;
+
     if (str.length()==0){
+
       exit (-1);
+
     }else {
-        nouvellePhrase.push_back(str);
-        for (auto it = nouvellePhrase.begin(); it != nouvellePhrase.end(); ++it){
-    
-        cout << *it << endl;
 
-    }
-    
-}
-
+      nouvellePhrase = TableauDeMot(str);
+      
 
     
     
