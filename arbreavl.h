@@ -33,8 +33,8 @@ class ArbreAVL
     Iterateur debut() const;
     Iterateur fin() const;
     Iterateur rechercher(const T&) const;
-    Iterateur rechercherEgalOuSuivant(const T&) const;
-    Iterateur rechercherEgalOuPrecedent(const T&) const;
+    //Iterateur rechercherEgalOuSuivant(const T&) const;
+    //Iterateur rechercherEgalOuPrecedent(const T&) const;
 
     // Accès aux éléments de l'arbre via un intérateur.
     const T& operator[](const Iterateur&) const;
@@ -238,69 +238,6 @@ void ArbreAVL<T>::vider(Noeud*& noeud)
 }
 
 template <class T>
-void ArbreAVL<T>::copier(const Noeud* source, Noeud*& noeud) const
-{
-
-    if (source != NULL){
-        noeud = new Noeud (source->contenu);
-        noeud->equilibre = source->equilibre;
-        copier(source->droite, noeud->droite);
-        copier(source->gauche, noeud->gauche);
-      }
-}
-
-template <class T>
-int  ArbreAVL<T>::hauteur() const{
-    int compteur = 0;
-    return compteur;
-}
-
-template <class T>
-const T& ArbreAVL<T>::max(Noeud* n) const
-{
-    // À compléter.
-}
-
-//----------- L'enlèvement est optionnel (non requise pour le TP2) ----------//
-template <class T>
-void ArbreAVL<T>::enlever(const T& element)
-{
-    enlever(racine, element);
-}
-
-template <class T>
-bool ArbreAVL<T>::enlever(Noeud*& noeud, const T& element)
-{
-    if(element < noeud->contenu)
-    {
-        if(enlever(noeud->gauche, element))
-        {
-            // ...
-        }
-    }
-    else if(element > noeud->contenu)
-    {
-        // ...
-    }
-    else if(element == noeud->contenu)
-    {
-        if (noeud->gauche==NULL && noeud->droite==NULL)
-        {
-            delete noeud;
-            noeud = NULL;
-            return true;
-        }
-        else
-        {
-            // ...
-            return true;
-        }
-    }
-
-}
-//----------- L'enlèvement est optionnel (non requise pour le TP2) ----------//
-
-template <class T>
 typename ArbreAVL<T>::Iterateur ArbreAVL<T>::debut() const
 {
     Iterateur iter(*this);
@@ -324,46 +261,6 @@ typename ArbreAVL<T>::Iterateur ArbreAVL<T>::fin() const
         iter.courant = iter.courant->droite;
     }
     return iter;
-}
-
-template <class T>
-typename ArbreAVL<T>::Iterateur ArbreAVL<T>::rechercher(const T& e) const
-{
-    Iterateur iter(*this);
-    Noeud * temp;
-    if (racine != NULL){
-        temp = racine;
-        while (temp){
-            if (temp->contenu > e){
-                iter.chemin.empiler(temp);
-                temp = temp->gauche;
-            }
-            else if (temp->contenu < e){
-                temp = temp->droite;
-            }
-            else {
-                iter.courant = temp;
-                return iter;
-            }
-        }
-    }
-   iter.chemin.vider();
-   return iter;
-}
-
-template <class T>
-typename ArbreAVL<T>::Iterateur ArbreAVL<T>::rechercherEgalOuSuivant(const T& e) const
-{
-    Iterateur iter(*this);
-    // À compléter.
-    return iter;
-}
-
-template <class T>
-typename ArbreAVL<T>::Iterateur ArbreAVL<T>::rechercherEgalOuPrecedent(const T& e) const
-{
-    // À compléter.
-    return Iterateur(*this);
 }
 
 template <class T>

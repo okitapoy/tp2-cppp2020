@@ -1,12 +1,20 @@
 
 
+/*
+Bonjour, ce travail est fait par deux étudiant :
+
+CHAOUKI Mohamed
+code permanent: CHAM27088802
+
+Christian Koy Okitapoy
+code permanent: OKIK08078702
+
+*/
+
 #include "DocumentXML.hpp"
 #include "ElementXML.hpp"
 #include "Histoire.hpp"
 #include "Lecteur.hpp"
-
-//#include "arbreavl.h"
-//#include "arbremap.h"
 #include "arbreMapAvl.h"
 
 #include <algorithm>
@@ -20,15 +28,25 @@
 #include <utility>
 #include <vector>
 
-
-
 using namespace std;
+
+
+string chaine;
+double idf = 0;
+double sommeV = 0;
+string cle;
+
+// structure qui stoque la frequece du mot dans chaque titre d histoire
+struct FrequenceHistoire {
+  double frequence;
+  string titre;
+  bool operator() (FrequenceHistoire i,FrequenceHistoire j) {
+    return (i.frequence > j.frequence);}
+} frequenceHistoire;
 
 void genererArbreFrequence(const vector<Histoire *> *histoires, ArbreMapAVL<string,int> *&avl,ArbreMapAVL<int,string> &arbreTitres);
 void genererArbreIDF(int nbrHistoires, ArbreMapAVL<string,int> *&avl, ArbreMapAVL<string,double> &arbreIDF);
 void appliquerFormulerIDF(ArbreMapAVL<string,double> &arbreIDF, int nbrHistoires);
-vector<string> TableauDeMot(string &entreeMot);
-
 
 vector< Histoire * > *
 lireDocuments( string a_nomFichier )
@@ -66,41 +84,41 @@ lireDocuments( string a_nomFichier )
 }
 
 
-
-
-//--------------------------------------------------------------
-//----------------------------------------------------------------
-
-
+/*
+  Cette methode cree Un arbre d'histoire et insere les titres d'histoires a l'interieur ensuite
+  elle insere dans l'arbre de titres d'histoire les mots.
+  @param : vecteur de pointeur d'nbrHistoires
+  @param : un arbre avlmap
+  @param : un arbre de titre d'histoires
+*/
 void genererArbreFrequence(const vector<Histoire *> *histoires, ArbreMapAVL<string,int> *&avl,ArbreMapAVL<int,string> &arbreTitres){
 
 
   int tempChiffre = 0;
   int index = 0;
 
-    for( Histoire * histoire : * histoires )
-    {
+  for( Histoire * histoire : * histoires )
+  {
         arbreTitres.inserer(index,histoire->titre());
         avl[index] = ArbreMapAVL<string,int>();
 
-        for( Phrase p : * histoire )
-        {
+            for( Phrase p : * histoire )
+            {
 
-          for(auto iterPhrase = p.begin(); iterPhrase != p.end(); ++iterPhrase){
-            string mot =  *iterPhrase;
+                for(auto iterPhrase = p.begin(); iterPhrase != p.end(); ++iterPhrase){
+                    string mot =  *iterPhrase;
 
+                    if(avl[index].contient(mot)){
+                        tempChiffre =  avl[index].operator[](mot) + 1;
+                        avl[index].inserer(mot,tempChiffre);
 
-            if(avl[index].contient(mot)){
-              tempChiffre =  avl[index].operator[](mot) + 1;
-              avl[index].inserer(mot,tempChiffre);
+                    }else{
+                        avl[index].inserer(mot,1);
+                    }
 
-            }else{
-              avl[index].inserer(mot,1);
+                }
+
             }
-
-         }
-
-        }
         ++index;
     }
 
@@ -108,36 +126,41 @@ void genererArbreFrequence(const vector<Histoire *> *histoires, ArbreMapAVL<stri
 }
 
 
-
+/*
+  Cette methode genere un arbre IDF. Elle cherche le mot dans l'arbre avl puis une fois trouver
+  si il est deja dedans elle l'increment de 1 pour connaitre son nombre d'occurences.
+  Si elle ne le trouve pas, elle l ajoute a l arbre et initialise son nombre d occurence a 1.
+  @param : nombre d'hitroires
+  @param : arbre map avl
+  @param : arbre IDF
+*/
 void genererArbreIDF(int nbrHistoires, ArbreMapAVL<string,int> *&avl, ArbreMapAVL<string,double> &arbreIDF){
 
   string mot;
   double nbrOccurence = 0;
 
-  //int c = 0;//====
-
   for(int i = 0; i < nbrHistoires; i++){
 
     if(i == 0){
 
-      for(auto iter = avl[i].debut(); iter != avl[i].fin(); ++iter){
-          mot =  avl[i].operator[](iter);
-          arbreIDF.inserer(mot,1.0);
-      }
+          for(auto iter = avl[i].debut(); iter != avl[i].fin(); ++iter){
+              mot =  avl[i].operator[](iter);
+              arbreIDF.inserer(mot,1.0);
+          }
 
     }else{
-      for(auto iter = avl[i].debut(); iter != avl[i].fin(); ++iter){
+          for(auto iter = avl[i].debut(); iter != avl[i].fin(); ++iter){
 
-        mot =  avl[i].operator[](iter);
+              mot =  avl[i].operator[](iter);
 
-        if(arbreIDF.contient(mot)){
-          nbrOccurence = arbreIDF.operator[](mot) + 1;
-          arbreIDF.inserer(mot,nbrOccurence);
-        }else{
-          arbreIDF.inserer(mot,1.0);
-        }
+              if(arbreIDF.contient(mot)){
+                  nbrOccurence = arbreIDF.operator[](mot) + 1;
+                  arbreIDF.inserer(mot,nbrOccurence);
+              }else{
+                  arbreIDF.inserer(mot,1.0);
+              }
 
-      }
+          }
 
     }
 
@@ -148,257 +171,99 @@ void genererArbreIDF(int nbrHistoires, ArbreMapAVL<string,int> *&avl, ArbreMapAV
 
 }
 
-
+/*
+Cette methode prend tous les mots qui se trouvent dans l arbre et applique
+sur eux la formule IDF.
+@param : arebre idf
+@param : nombre d histoire
+*/
 void appliquerFormulerIDF(ArbreMapAVL<string,double> &arbreIDF, int nbrHistoires){
 
   string mot ;
   double cc = 0;
   double idf = 0;
   for(auto iter = arbreIDF.debut(); iter != arbreIDF.fin(); ++iter){
-    mot = arbreIDF.operator[](iter);
-    cc = arbreIDF.operator[](mot);
-    idf = log2(nbrHistoires/cc);
-    arbreIDF.inserer(mot,idf);
-
-
-  //  cc = arbreIDF.operator[](mot);
-  // cout << mot << " : " << cc << endl;
+      mot = arbreIDF.operator[](iter);
+      cc = arbreIDF.operator[](mot);
+      idf = log2(nbrHistoires/cc);
+      arbreIDF.inserer(mot,idf);
 
   }
 }
 
-vector<string> TableauDeMot(string &entreeMot){
-  vector<string> nouvellePhrase;
-  string temp = "";
-
-  for (int i = 0; i <= entreeMot.size(); i++){
-      if ((entreeMot[i] >= 'A' && entreeMot[i] <= 'Z' )|| (entreeMot[i] >= 'a' && entreeMot[i] <= 'z')
-            || entreeMot[i] == '-' ){
-          temp += tolower(entreeMot[i]);
-      }else{
-        if (temp.compare("") > 0 || temp.compare("") < 0){
-        nouvellePhrase.push_back(temp);
-        }
-        temp = "";
-      }
-  }
-
-  return nouvellePhrase;
-
-}
-
-
+//main
 int main() {
     // gardez la ligne suivante, elle lit le corpus et le place dans la structure de base.
     // Vous avez donc un vecteur d'histoire qui contient l'information sur les histoires,
     // les Phrases et les mots qu'elles contiennent.		arbreavl.o
     vector< Histoire * > * histoires = lireDocuments( string( "listeDocument.xml" ) );
 
+// Creation des arbres
   ArbreMapAVL<string,int> *avl = new ArbreMapAVL<string,int>[histoires->size()];
   ArbreMapAVL<int,string> arbreTitres;
   ArbreMapAVL<string,double> arbreIDF;
 
+// Generer les arbres
   genererArbreFrequence(histoires,avl,arbreTitres);
   genererArbreIDF(histoires->size(),avl,arbreIDF);
 
   vector<string> nouvellePhrase;
   double cc;
   string str;
-do{
-    cout << "Entrez votre requete : "<< endl;
+  do{
+      cout << "Entrez votre requete : "<< endl;
 
-    getline (cin, str);
+      getline (cin, str);
 
-    if (str.length()==0){
+// si le cin est vide on vide les arbres puis on quitte le programme
+      if (str.length()==0){
+          avl->vider();
+          arbreTitres.vider();
+          arbreIDF.vider();
+          exit (-1);
+      }
 
-      exit (-1);
-    }
+      Phrase entree(str);
 
+// tableau d'affichage
+      vector<FrequenceHistoire> tableauFH;
+      FrequenceHistoire fh;
 
-//traitement du deuxieme calcul
+// deuxieme calcul
+      for(int i = 0; i < histoires->size(); ++i){
 
-Phrase entree(str);
-string chaine;
-double idf = 0;
-double sommeV = 0;
-string cle;
+          for(auto iter = entree.begin(); iter != entree.end(); ++iter){
 
-struct FrequenceHistoire {
-  double frequence;
-  string titre;
-  bool operator() (FrequenceHistoire i,FrequenceHistoire j) { return (i.frequence > j.frequence);}
-} frequenceHistoire;
+              chaine = *iter;
 
-vector<FrequenceHistoire> tableauFH;
-FrequenceHistoire fh;
+              if(avl[i].contient(chaine)){
+                  idf = arbreIDF.operator[](chaine);
+                  sommeV += (idf * avl[i].operator[](chaine));
+              }
 
-for(int i = 0; i < histoires->size(); ++i){
+          }
 
-  for(auto iter = entree.begin(); iter != entree.end(); ++iter){
+          fh.frequence = sommeV;
+          fh.titre = arbreTitres.operator[](i);
+          tableauFH.push_back(fh);
 
-    chaine = *iter;
+          idf = 0;
+          sommeV = 0;
+      }
 
-    if(avl[i].contient(chaine)){// chaine = le mot a verifier, dans la liste des mot entree par l'utilisateur
-      idf = arbreIDF.operator[](chaine);
-      sommeV += (idf * avl[i].operator[](chaine));
-    }
+// trier le resultat par le premier double en premier
+  sort(tableauFH.begin(), tableauFH.end(), frequenceHistoire);
+
+  for (int k = 0; k < 5; ++k) {
+      cout << tableauFH[k].frequence << " : " << tableauFH[k].titre << endl;
 
   }
 
-
-fh.frequence = sommeV;
-fh.titre = arbreTitres.operator[](i);
-tableauFH.push_back(fh);
-
-
-
-  idf = 0;
-  sommeV = 0;
-}
-
-
-
-sort(tableauFH.begin(), tableauFH.end(), frequenceHistoire);
-
-for (int k = 0; k < 5; ++k) {
-  cout << tableauFH[k].frequence << " : " << tableauFH[k].titre << endl;
-
-}
-
-tableauFH.clear();
+  tableauFH.clear();
 
 
 }while(str.length()!=0);
 
+return 0;
 
-
-  /*
-  int tempChiffre = 0;
-  int index = 0;
-
-    // Pour votre projet, enlevez le code qui suit et remplacer le par votre code.
-    // vous pouvez ajouter des fonctionions.
-
-    // Parcourir les histoires a l'aide de l'iterateur du vecteur.
-    for( Histoire * histoire : * histoires )
-    {
-        // Les histoires ont une variable de classe 'titre'.
-        //cout << histoire->titre() << endl;
-      //  cout << "index  : " << index << endl;
-        arbreTitres.inserer(index,histoire->titre());
-        avl[index] = ArbreMapAVL<string,int>();
-      //  cout << "rien" << endl;
-
-        // Parcourir les Phrases qui compose une histoire � l'aide de l'iterateur des Histoires.
-        for( Phrase p : * histoire )
-        {
-            // p.begin() va chercher le premier mot de la Phrase p.  c'est aussi un iterateur et il peut
-            // s'utiliser avec les for augment�s.
-            // ici, nous affichons seulement le premier mot de la Phrase.
-          //  cout< *( p.begin() ) << endl;
-
-
-
-          for(auto iterPhrase = p.begin(); iterPhrase != p.end(); ++iterPhrase){
-            string mot =  *iterPhrase;
-
-
-            if(avl[index].contient(mot)){
-              tempChiffre =  avl[index].operator[](mot) + 1;
-              avl[index].inserer(mot,tempChiffre);
-
-            }else{
-              avl[index].inserer(mot,1);
-            }
-
-         }
-
-        }
-
-        //cout << endl;
-        //break;
-        ++index;
-    }
-
-*/
-//---------------------------------------------------------------------
-//--------------------------------------------------------------------
-
-
-/*
-
-//ArbreMapAVL<string,double> arbreIDF;
-string mot;
-double nbrOccurence = 0;
-
-//int c = 0;//====
-
-for(int i = 0; i < histoires->size(); i++){
-
-  if(i == 0){
-
-    for(auto iter = avl[i].debut(); iter != avl[i].fin(); ++iter){
-        mot =  avl[i].operator[](iter);
-        arbreIDF.inserer(mot,1.0);
-    }
-
-  }else{
-    for(auto iter = avl[i].debut(); iter != avl[i].fin(); ++iter){
-
-      mot =  avl[i].operator[](iter);
-
-      if(arbreIDF.contient(mot)){
-        nbrOccurence = arbreIDF.operator[](mot) + 1;
-        arbreIDF.inserer(mot,nbrOccurence);
-      }else{
-        arbreIDF.inserer(mot,1.0);
-      }
-
-    }
-
-  }
-
-}
-*/
-
-
-
-
-/*
-//apliquer la formule log sur arbre idf
-string mot;
-double cc = 0;
-double idf = 0;
-for(auto iter = arbreIDF.debut(); iter != arbreIDF.fin(); ++iter){
-  mot = arbreIDF.operator[](iter);
-  cc = arbreIDF.operator[](mot);
-  idf = log2(histoires->size()/cc);
-  arbreIDF.inserer(mot,idf);
-
-
-  cc = arbreIDF.operator[](mot);
- cout << mot << " : " << cc << endl;
-
-}
-
-*/
-
-
-
-
-//cout << "log : " << log2(26.0/7.0) << endl;
-
-
-
-    return 0;
-
-
-
-    /*the hideous monster
-    launched itself into the air straight toward them. (_To be concluded in the February
-    Number._) </chapitre> */
-    //3
-    //2
-    //1
-    //zero = 7
 }

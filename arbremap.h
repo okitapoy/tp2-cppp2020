@@ -36,10 +36,9 @@ class ArbreMap{
 
       Iterateur debut() {return Iterateur(*this);}
       Iterateur fin() {return Iterateur(entrees.fin());}
-      Iterateur rechercher(const K& cle) {return Iterateur(entrees.rechercher(cle));}
+
 
       bool contient(const K&) const;
-      void enlever(const K&);
       void vider();
       bool vide() const;
 
@@ -61,11 +60,6 @@ bool ArbreMap<K,V>::vide() const{
     return entrees.vide();
 }
 
-template <class K, class V>
-void ArbreMap<K,V>::enlever(const K& c)
-{
-    // À compléter
-}
 
 template <class K, class V>
 bool ArbreMap<K,V>::contient(const K& c) const
