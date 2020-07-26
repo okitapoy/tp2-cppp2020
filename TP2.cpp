@@ -30,19 +30,20 @@ code permanent: OKIK08078702
 
 using namespace std;
 
-
-string chaine;
-double idf = 0;
-double sommeV = 0;
-string cle;
-
 // structure qui stoque la frequece du mot dans chaque titre d histoire
 struct FrequenceHistoire {
   double frequence;
   string titre;
+  // Trie un tableau de frequence d'histoire du plus grand au plus petit.
   bool operator() (FrequenceHistoire i,FrequenceHistoire j) {
     return (i.frequence > j.frequence);}
 } frequenceHistoire;
+
+vector<FrequenceHistoire> tableauFH;
+FrequenceHistoire fh;
+string motUtilisateur;
+double idf = 0;
+double sommeFrequence = 0;
 
 void genererArbreFrequence(const vector<Histoire *> *histoires, ArbreMapAVL<string,int> *&avl,ArbreMapAVL<int,string> &arbreTitres);
 void genererArbreIDF(int nbrHistoires, ArbreMapAVL<string,int> *&avl, ArbreMapAVL<string,double> &arbreIDF);
@@ -207,63 +208,58 @@ int main() {
   genererArbreFrequence(histoires,avl,arbreTitres);
   genererArbreIDF(histoires->size(),avl,arbreIDF);
 
-  vector<string> nouvellePhrase;
-  double cc;
-  string str;
+  string stringUtilisateur = "";
+
   do{
       cout << "Entrez votre requete : "<< endl;
 
-      getline (cin, str);
+      getline (cin, stringUtilisateur);
 
 // si le cin est vide on vide les arbres puis on quitte le programme
-      if (str.length()==0){
+      if (stringUtilisateur.length()==0){
           avl->vider();
           arbreTitres.vider();
           arbreIDF.vider();
           exit (-1);
       }
 
-      Phrase entree(str);
-
-// tableau d'affichage
-      vector<FrequenceHistoire> tableauFH;
-      FrequenceHistoire fh;
+      Phrase entree(stringUtilisateur);
 
 // deuxieme calcul
       for(int i = 0; i < histoires->size(); ++i){
 
           for(auto iter = entree.begin(); iter != entree.end(); ++iter){
 
-              chaine = *iter;
+              motUtilisateur = *iter;
 
-              if(avl[i].contient(chaine)){
-                  idf = arbreIDF.operator[](chaine);
-                  sommeV += (idf * avl[i].operator[](chaine));
+              if(avl[i].contient(motUtilisateur)){
+                  idf = arbreIDF.operator[](motUtilisateur);
+                  sommeFrequence += (idf * avl[i].operator[](motUtilisateur));
               }
 
           }
 
-          fh.frequence = sommeV;
+          fh.frequence = sommeFrequence;
           fh.titre = arbreTitres.operator[](i);
           tableauFH.push_back(fh);
 
           idf = 0;
-          sommeV = 0;
+          sommeFrequence = 0;
       }
 
 // trier le resultat par le premier double en premier
-  sort(tableauFH.begin(), tableauFH.end(), frequenceHistoire);
+      sort(tableauFH.begin(), tableauFH.end(), frequenceHistoire);
 
-  for (int k = 0; k < 5; ++k) {
-      cout << tableauFH[k].frequence << " : " << tableauFH[k].titre << endl;
+      for (int k = 0; k < 5; ++k) {
+          cout << tableauFH[k].frequence << " : " << tableauFH[k].titre << endl;
 
-  }
+      }
 
-  tableauFH.clear();
+      tableauFH.clear();
 
 
-}while(str.length()!=0);
+  }while(stringUtilisateur.length()!=0);
 
-return 0;
+  return 0;
 
 }

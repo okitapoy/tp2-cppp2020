@@ -2,12 +2,6 @@
    INF3105 - Structures de données et algorithmes
    Squelette pour classe générique ArbreMap<K,V> pour le Lab8 et le TP2.
 
-   AUTEUR(S):
-   CHAOUKI Mohamed
-   code permanent: CHAM27088802
-
-   Christian Koy Okitapoy
-   code permanent: OKIK08078702
 */
 
 
@@ -75,7 +69,7 @@ class ArbreMapAVL
 
 
   public:
-    // Sera présenté à la semaine #7
+
     class Iterateur
     {
       public:
