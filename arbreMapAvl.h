@@ -1,3 +1,18 @@
+/* UQAM / Département d'informatique
+   INF3105 - Structures de données et algorithmes
+   Squelette pour classe générique ArbreMap<K,V> pour le Lab8 et le TP2.
+
+   AUTEUR(S):
+   CHAOUKI Mohamed
+   code permanent: CHAM27088802
+
+   Christian Koy Okitapoy
+   code permanent: OKIK08078702
+*/
+
+
+
+
 #if !defined(__ARBREMapAVL_H__)
 #define __ARBREMapAVL_H__
 #include <iostream>
@@ -57,8 +72,7 @@ class ArbreMapAVL
     void vider(Noeud *&);
     void copier(const Noeud *, Noeud *&) const;
     const K &max(Noeud *) const;
-    void afficher(Noeud *courant, int profondeur = 0, int etat = 0) const;
-    // bool enlever(Noeud *&, const K &e);
+
 
   public:
     // Sera présenté à la semaine #7
@@ -182,7 +196,6 @@ bool ArbreMapAVL<K, V>::inserer(Noeud *&noeud, const K &cle, const V &valeur)
         return false;
     }
 
-    // cle == noeud->cle
     noeud->cle = cle;
     noeud->valeur = valeur;
     return false;
@@ -220,42 +233,7 @@ void ArbreMapAVL<K, V>::rotationDroiteGauche(Noeud *&racinesousarbre)
     racinesousarbre = temp;
 }
 
-template <class K, class V>
-void ArbreMapAVL<K, V>::afficher() const
-{
-    printf("\n");
-    if (racine != nullptr)
-        afficher(racine);
-    else
-        printf("Vide");
-    printf("\n");
-}
 
-template <class K, class V>
-void ArbreMapAVL<K, V>::afficher(Noeud *courant, int profondeur, int etat) const
-{
-    if (courant->droite)
-        afficher(courant->droite, profondeur + 1, 1);
-
-    for (int i = 0; i < profondeur; i++)
-        printf("          ");
-
-    if (etat == 1) // gauche
-        std::cout << "┌───────";
-    else if (etat == 2) // droite
-        std::cout << "└───────";
-
-    std::cout << courant->cle << std::endl;
-
-    if (courant->gauche)
-        afficher(courant->gauche, profondeur + 1, 2);
-}
-
-template <class K, class V>
-bool ArbreMapAVL<K, V>::vide() const
-{
-    return racine == nullptr;
-}
 
 template <class K, class V>
 void ArbreMapAVL<K, V>::vider()
@@ -362,23 +340,21 @@ ArbreMapAVL<K, V>::Iterateur::Iterateur(const ArbreMapAVL<K, V>::Iterateur &a)
 template <class K, class V>
 typename ArbreMapAVL<K, V>::Iterateur &ArbreMapAVL<K, V>::Iterateur::operator++()
 {
-    // À compléter.
-    //return *this;
 
     if (courant->droite == NULL){
- if (!chemin.vide()){
-      courant = chemin.depiler();
-  }else{
-      courant = NULL;
-  }
-}
-else {
- courant = courant->droite;
- while (courant->gauche != NULL){
-     chemin.empiler(courant);
-     courant = courant->gauche;
- }
-}//----
+       if (!chemin.vide()){
+          courant = chemin.depiler();
+       }else{
+          courant = NULL;
+       }
+   }else {
+       courant = courant->droite;
+
+      while (courant->gauche != NULL){
+          chemin.empiler(courant);
+           courant = courant->gauche;
+      }
+   }
 }
 
 // Post-incrément
@@ -451,15 +427,6 @@ template <class K, class V>
 typename ArbreMapAVL<K, V>::Iterateur ArbreMapAVL<K, V>::fin() const
 {
    return Iterateur(*this);
-/*
-    Iterateur iter(*this);
-iter.courant = racine;
-
-while(iter.courant != NULL && iter.courant->droite != NULL){
-    iter.chemin.empiler(iter.courant->droite);
-    iter.courant = iter.courant->droite;
-}
-return iter; */
 }
 
 template <class K, class V>
