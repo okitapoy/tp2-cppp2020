@@ -5,8 +5,6 @@
 */
 
 
-
-
 #if !defined(__ARBREMapAVL_H__)
 #define __ARBREMapAVL_H__
 #include <iostream>
@@ -36,7 +34,6 @@ class ArbreMapAVL
 
     // Accès aux éléments de l'arbre via un intérateur.
     const V &operator[](const K &c) const;
-    const K &operator[](const Iterateur &) const;
     K &operator[](const Iterateur &);
 
     // Copie d'un arbre AVL.
@@ -74,7 +71,6 @@ class ArbreMapAVL
         operator bool() const;
 
         Iterateur &operator++();
-        //Iterateur operator++(int);
 
       private:
         const ArbreMapAVL &arbre_associe;
@@ -283,13 +279,6 @@ const V &ArbreMapAVL<K, V>::operator[](const K &c) const
     return rechercher(c).courant->element;
 }
 
-template <class K, class V>
-const K &ArbreMapAVL<K, V>::operator[](const Iterateur &iterateur) const
-{
-    assert(&iterateur.arbre_associe == this);
-    assert(iterateur.courant);
-    return iterateur.courant->valeur;
-}
 
 template <class K, class V>
 K &ArbreMapAVL<K, V>::operator[](const Iterateur &iterateur)
