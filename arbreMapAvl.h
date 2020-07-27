@@ -4,7 +4,6 @@
 
 */
 
-
 #if !defined(__ARBREMapAVL_H__)
 #define __ARBREMapAVL_H__
 #include <iostream>
@@ -128,10 +127,12 @@ bool ArbreMapAVL<K, V>::contient(const K &valeur) const
     }
 
     if (noeudTemporaire == NULL){
-        return trouver = false;
+        trouver = false;
     }else{
-        return trouver = true;
-    }    
+        trouver = true;
+    }   
+
+    return trouver; 
 }
 
 // fait appel a la methode inserer afin d inserer l'element
