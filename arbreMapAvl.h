@@ -262,8 +262,7 @@ void ArbreMapAVL<K, V>::copier(const Noeud *source, Noeud *&noeud) const
       }
 }
 
-
-//----------------------- OPERATEURS ----------------------------//
+//
 template <class K, class V>
 const V &ArbreMapAVL<K, V>::operator[](const K &c) const
 {
@@ -282,14 +281,15 @@ K &ArbreMapAVL<K, V>::operator[](const Iterateur &iterateur)
 template <class K, class V>
 ArbreMapAVL<K, V> &ArbreMapAVL<K, V>::operator=(const ArbreMapAVL &autre)
 {
-    if (this == &autre)
+    if (this == &autre){
         return *this;
+    }    
     vider();
     copier(autre.racine, racine);
     return *this;
+
 }
 
-//----------------------- ITERATEURS ----------------------------//
 
 template <class K, class V>
 ArbreMapAVL<K, V>::Iterateur::Iterateur(const ArbreMapAVL &a)
@@ -334,18 +334,18 @@ ArbreMapAVL<K, V>::Iterateur::operator bool() const
 }
 
 
-//----------------------- ITERATEURS ----------------------------//
 template <class K, class V>
 typename ArbreMapAVL<K, V>::Iterateur ArbreMapAVL<K, V>::debut() const
 {
     Iterateur iter(*this);
     iter.courant = racine;
-    
+    if (iter.courant->gauche != NULL){
         while (iter.courant->gauche != NULL)
         {
             iter.chemin.empiler(iter.courant);
             iter.courant = iter.courant->gauche;
         }
+    }    
     return iter;
 }
 
@@ -358,7 +358,6 @@ typename ArbreMapAVL<K, V>::Iterateur ArbreMapAVL<K, V>::fin() const
 template <class K, class V>
 typename ArbreMapAVL<K, V>::Iterateur ArbreMapAVL<K, V>::rechercher(const K &e) const
 {
-    bool trouver = false;
     Iterateur iter(*this);
     Noeud *noeud = racine;
 
