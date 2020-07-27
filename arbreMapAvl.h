@@ -146,6 +146,7 @@ void ArbreMapAVL<K, V>::inserer(const K &valeur, const V &element)
 template <class K, class V>
 bool ArbreMapAVL<K, V>::inserer(Noeud *&noeud, const K &valeur, const V &element)
 {
+    
     if (noeud == NULL)
     {
         noeud = new Noeud(valeur, element);
@@ -239,13 +240,11 @@ void ArbreMapAVL<K, V>::vider()
 template <class K, class V>
 void ArbreMapAVL<K, V>::vider(Noeud *&noeud)
 {
-    if (noeud == NULL){}
-        return;
-
-    vider(noeud->gauche);
-    vider(noeud->droite);
-
-    delete noeud;
+    if(noeud != NULL){
+        vider(noeud->droite);
+        vider(noeud->gauche);
+        delete noeud;
+    }
 }
 
 // fait une copie du noeud
@@ -253,23 +252,14 @@ void ArbreMapAVL<K, V>::vider(Noeud *&noeud)
 //@param : noeud qu on veut creer
 template <class K, class V>
 void ArbreMapAVL<K, V>::copier(const Noeud *source, Noeud *&noeud) const
-{
-    if (source == NULL)
-    {
-        noeud = NULL;
-        return;
-    }
+{   
 
-    noeud = new Noeud(source->valeur, source->element);
-    noeud->equilibre = source->equilibre;
-
-    if (source->droite != NULL){
-        copier(source->droite, noeud->droite);
-    }    
-
-    if (source->gauche != NULL){
+    if (source != NULL){
+        noeud = new Noeud (source->valeur, source->element);
+        noeud->equilibre = source->equilibre;
         copier(source->gauche, noeud->gauche);
-    }    
+        copier(source->droite, noeud->droite);
+      }
 }
 
 
@@ -371,19 +361,22 @@ typename ArbreMapAVL<K, V>::Iterateur ArbreMapAVL<K, V>::rechercher(const K &e) 
     bool trouver = false;
     Iterateur iter(*this);
     Noeud *noeud = racine;
-    while (noeud)
-    {
-        if (e > noeud->valeur)
+
+    if (noeud != NULL){
+        while (noeud)
         {
-            iter.chemin.empiler(noeud);
-            noeud = noeud->droite;
-        }
-        else if (e < noeud->valeur)
-            noeud = noeud->gauche;
-        else
-        {
+            if (noeud->valeur < e )
+            {
+                iter.chemin.empiler(noeud);
+                noeud = noeud->droite;
+            }
+            else if (noeud->valeur > e){
+                noeud = noeud->gauche;
+            }else
+            {
             iter.courant = noeud;
             return iter;
+            }
         }
     }
     iter.chemin.vider();
